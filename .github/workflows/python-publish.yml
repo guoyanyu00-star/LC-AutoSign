@@ -2,20 +2,32 @@ name: JLC Auto Sign
 
 on:
   schedule:
-    - cron: '0 16,22,4,10 * * *'  # 每 6 小时执行一次，UTC 时间
-
+    # 重点：UTC 时间 0点 ~ 1点 内随机触发 = 北京时间 8点 ~ 9点
+    - cron: '0 0 * * *'
   workflow_dispatch:
 
 jobs:
   sign:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
+      - name: Checkout 代码
+        uses: actions/checkout@v4
 
-    - name: Run Sign Script
-      env:
-        TOKEN_LIST: ${{ secrets.TOKEN_LIST }}
-        SEND_KEY_LIST: ${{ secrets.SEND_KEY_LIST }}
-      run: |
-        python main.py
+      - name: 设置 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 安装依赖
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: 随机延迟 0~60分钟 后签到
+        env:
+          TOKEN_LIST: ${{ secrets.TOKEN_LIST }}
+          SEND_KEY_LIST: ${{ secrets.SEND_KEY_LIST }}
+        run: |
+          # 生成 0 ~ 3599 秒的随机延迟（0~59分59秒）
+          sleep $(( RANDOM % 3600 ))
+          python main.py
