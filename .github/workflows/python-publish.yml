@@ -2,32 +2,26 @@ name: JLC Auto Sign
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # UTC 0点 = 北京时间 8点，启动后随机延迟1小时内
+    - cron: '0 0 * * *'  # UTC 2:00 = 北京时间 08:00
+
   workflow_dispatch:
 
-:
-:
-: 
-:
-      # 强制启用 Node.js 24，彻底消除警告
-: 
-:
-      - : 
-: actions/checkout@v4  # 已兼容 Node24，无需升级
+jobs:
+  sign:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4  # 升级到 v4
 
-      - : 
-: actions/setup-python@v5  # 已兼容 Node24，无需升级
-:
-: 
+    - name: Random Delay (0-3600 seconds)
+      run: |
+        DELAY=$((RANDOM % 3600))
+        echo "⏰ 随机延迟 ${DELAY} 秒后执行（约 $((DELAY/60)) 分钟）"
+        sleep $DELAY
 
-      - : 安装依赖
-: |
-
-
-
-      - : 随机延迟 0~60分钟 签到
-:
-: ${{}}
-: ${{}}
-: |
-
+    - name: Run Sign Script
+      env:
+        TOKEN_LIST: ${{ secrets.TOKEN_LIST }}
+        SEND_KEY_LIST: ${{ secrets.SEND_KEY_LIST }}
+      run: |
+        python main.py
