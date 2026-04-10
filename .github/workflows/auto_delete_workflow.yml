@@ -4,7 +4,7 @@ on:
   schedule:
     - cron: '0 0 * * *'  # 北京时间 08:00
 
-workflow_dispatch:
+  workflow_dispatch:
 
 jobs:
   sign:
