@@ -1,0 +1,27 @@
+name: JLC Auto Sign
+
+on:
+  schedule:
+    - cron: '31 23 * * *'  # UTC 23:31 = 北京时间 07:31
+
+  workflow_dispatch:
+
+jobs:
+  sign:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4  # 升级到 v4
+
+    - name: Random Delay (0-3600 seconds)
+      run: |
+        DELAY=$((RANDOM % 3600))
+        echo "⏰ 随机延迟 ${DELAY} 秒后执行（约 $((DELAY/60)) 分钟）"
+        sleep $DELAY
+
+    - name: Run Sign Script
+      env:
+        TOKEN_LIST: ${{ secrets.TOKEN_LIST }}
+        SEND_KEY_LIST: ${{ secrets.SEND_KEY_LIST }}
+      run: |
+        python main.py
